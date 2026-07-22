@@ -2,6 +2,9 @@
 
 Minimal reproducible example showing an immediate `RTCWDT_RTC_RST` bootloop / crash on **ESP32-S3 (8MB Octal PSRAM + 16MB Flash)** when building with Rust and `esp-idf-sys` / `esp-idf-hal`.
 
+A pure ESP-IDF C implementation with identical PSRAM/Flash hardware configuration completes initialization without any issues:
+👉 [es-psram (Working C Baseline)](https://github.com/i-3/es-psram)
+
 ## Target Hardware
 * **Chip:** ESP32-S3 (revision v0.2)
 * **Flash:** 16MB (DIO mode, 40MHz)
