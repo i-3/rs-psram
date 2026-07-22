@@ -1,0 +1,18 @@
+[target.xtensa-esp32s3-espidf]
+linker = "ldproxy"
+runner = "espflash flash --monitor"
+rustflags = [
+    "-C", "default-linker-libraries",
+]
+
+[build]
+target = "xtensa-esp32s3-espidf"
+
+# Этот блок критически важен для Xtensa, чтобы Cargo сам собрал core и std
+[unstable]
+build-std = ["std", "panic_abort"]
+
+[env]
+MCU = "esp32s3"
+ESP_IDF_TOOLS_INSTALL_DIR = "workspace"
+ESP_IDF_VERSION = "v5.2.2"
