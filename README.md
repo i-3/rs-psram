@@ -1,28 +1,40 @@
-# ESP32-S3 Octal PSRAM Crash (Rust MRE)
+# ESP32-S3 Octal PSRAM Rust Reference Project (`rs-psram`)
 
-Minimal reproducible example showing an immediate `RTCWDT_RTC_RST` bootloop / crash on **ESP32-S3 (8MB Octal PSRAM + 16MB Flash)** when building with Rust and `esp-idf-sys` / `esp-idf-hal`.
+Reference project for **ESP32-S3 (8MB Octal PSRAM + 16MB Flash)** using Rust (`esp-idf-sys` / `esp-idf-hal`).
 
-A pure ESP-IDF C implementation with identical PSRAM/Flash hardware configuration completes initialization without any issues:
-👉 [es-psram (Working C Baseline)](https://github.com/i-3/es-psram)
+This repository serves as the Rust counterpart to the C reference project [`es-psram`](https://github.com/i-3/es-psram).
 
 ## Target Hardware
 * **Chip:** ESP32-S3 (revision v0.2)
-* **Flash:** 16MB (DIO mode, 40MHz)
+* **Flash:** 16MB (QIO mode, 80MHz)
 * **PSRAM:** 8MB Octal PSRAM (AP Memory, 40MHz)
 
-## Issue Summary
-Immediately after `cpu_start: Starting app cpu`, the chip crashes during PSRAM initialization:
+## Verification Status
+* **Status:** PASS (100% Working)
+* **ESP-IDF Version:** v5.2.2 (via `espressif/idf-rust:all_latest`)
 
-1. **Instant Crash & Garbage:** Log output cuts off mid-line (`d mmu entry)`), immediately followed by a burst of corrupted/garbage characters on UART as memory access drops.
-2. **2–3s Silence:** The system completely freezes for 2–3 seconds (panic handler cannot run).
-3. **RTC Watchdog Reset:** The hardware RTC Watchdog Timer times out and forces a hard reset (`rst:0x10 (RTCWDT_RTC_RST)`).
+## How to Run (Docker)
 
+Make the runner script executable and launch the build, flash, and serial monitor:
+
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+To exit the serial monitor, press `Ctrl + ]`.
+
+## Serial Output Log
 ```text
-D (322) cpu_start: Starting app cpu, entry point is 0x4037606c
-D (0) cpu_st...configuration...d mmu entry)...
-
-[ 2–3 seconds silence ]
-
-ESP-ROM:esp32s3-20210327
-Build:Mar 27 2021
-rst:0x10 (RTCWDT_RTC_RST),boot:0x2b (SPI_FAST_FLASH_BOOT)
+I (238) octal_psram: vendor id    : 0x0d (AP)
+I (238) octal_psram: dev id       : 0x02 (generation 3)
+I (239) octal_psram: density      : 0x03 (64 Mbit)
+I (279) esp_psram: Found 8MB PSRAM device
+I (283) esp_psram: Speed: 40MHz
+I (1025) esp_psram: SPI SRAM memory test OK
+I (1226) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (1709) main_task: Calling app_main()
+I (1709) rs_psram: ====================================
+I (1719) rs_psram:   SUCCESS: App reached main()!     
+I (1719) rs_psram: ====================================
+```
